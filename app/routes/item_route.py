@@ -26,7 +26,8 @@ def create_food_item(
         item_name=item.item_name,
         description=item.description,
         price=item.price,
-        restaurant_id=item.restaurant_id
+        restaurant_id=item.restaurant_id,
+        image_url=item.image_url
     )
 
     db.add(new_item)

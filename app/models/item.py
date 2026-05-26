@@ -8,6 +8,7 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.orm import relationship
+from sqlalchemy import String
 
 from datetime import datetime
 
@@ -20,6 +21,8 @@ class FoodItem(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     item_name = Column(String, nullable=False)
+    image_url = Column(String, nullable=True)
+    
 
     description = Column(String)
 

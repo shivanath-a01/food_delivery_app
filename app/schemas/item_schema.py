@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class FoodItemCreate(BaseModel):
 
@@ -9,6 +10,8 @@ class FoodItemCreate(BaseModel):
     price: float
 
     restaurant_id: int
+    image_url: Optional[str] = None
+
 
 class FoodItemResponse(BaseModel):
 
@@ -17,6 +20,8 @@ class FoodItemResponse(BaseModel):
     description: str
     price: float
     restaurant_id: int
+    image_url: Optional[str] = None
+
 
     class Config:
         orm_mode = True
