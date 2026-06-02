@@ -5,6 +5,7 @@ class CustomerCreate(BaseModel):
     contact_phone: str
     email: EmailStr
     password: str
+    role: str = "customer"
     
 class CustomerLogin(BaseModel):
     email: EmailStr

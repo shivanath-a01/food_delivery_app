@@ -16,12 +16,15 @@ class Customer(Base):
     password = Column(String, nullable=False)
 
     confirmation_code = Column(String)
+    role = Column(String, default="customer")
+    
 
     time_joined = Column(TIMESTAMP, default=datetime.utcnow)
 
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
     created_by = Column(String)
+    
 
     modified_at = Column(TIMESTAMP)
 

@@ -2,6 +2,8 @@ from jose import jwt
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
+from fastapi import Depends, HTTPException
+from app.models.customer import Customer
 
 load_dotenv()
 
@@ -75,5 +77,19 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         )
 
     return customer
+
+def get_current_admin(
+    current_user: Customer = Depends(get_current_user)
+):
+
+    if current_user.role != "admin":
+
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied"
+        )
+
+    return current_user
+
 
 

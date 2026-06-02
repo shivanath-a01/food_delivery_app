@@ -2,6 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
+from app.auth.token import get_current_admin
+from app.models.customer import Customer
+
 from app.deps import get_db
 from app.models.order_item import OrderItem
 
@@ -15,7 +18,8 @@ router = APIRouter()
 
 @router.get("/admin/dashboard")
 def admin_dashboard(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_admin: Customer = Depends(get_current_admin)
 ):
 
     total_customers = db.query(
@@ -43,7 +47,8 @@ def admin_dashboard(
 
 @router.get("/admin/top-items")
 def top_selling_items(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_admin: Customer = Depends(get_current_admin)
 ):
 
     items = db.query(

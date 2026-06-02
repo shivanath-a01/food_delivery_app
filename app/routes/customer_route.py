@@ -21,12 +21,13 @@ def register_customer(
     customer: CustomerCreate,
     db: Session = Depends(get_db)
 ):
-    
+
     new_customer = Customer(
         customer_name=customer.customer_name,
         contact_phone=customer.contact_phone,
         email=customer.email,
-        password=hash_password(customer.password)
+        password=hash_password(customer.password),
+        role=customer.role
     )
 
     db.add(new_customer)
