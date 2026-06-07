@@ -22,6 +22,27 @@ def register_customer(
     db: Session = Depends(get_db)
 ):
 
+    existing_email = db.query(Customer).filter(
+        Customer.email == customer.email
+    ).first()
+
+    if existing_email:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already registered"
+        )
+
+    existing_phone = db.query(Customer).filter(
+        Customer.contact_phone ==
+        customer.contact_phone
+    ).first()
+
+    if existing_phone:
+        raise HTTPException(
+            status_code=400,
+            detail="Phone number already registered"
+        )
+
     new_customer = Customer(
         customer_name=customer.customer_name,
         contact_phone=customer.contact_phone,

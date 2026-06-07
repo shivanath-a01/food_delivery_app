@@ -26,6 +26,17 @@ def create_restaurant(
     db: Session = Depends(get_db)
 ):
 
+    existing_restaurant = db.query(Restaurant).filter(
+        Restaurant.restaurant_name ==
+        restaurant.restaurant_name
+    ).first()
+
+    if existing_restaurant:
+        raise HTTPException(
+            status_code=400,
+            detail="Restaurant already exists"
+        )
+
     new_restaurant = Restaurant(
         restaurant_name=restaurant.restaurant_name,
         restaurant_address=restaurant.restaurant_address,
@@ -41,6 +52,7 @@ def create_restaurant(
     return {
         "message": "Restaurant created successfully"
     }
+
 @router.get(
     "/restaurants/search",
     response_model=List[RestaurantResponse]

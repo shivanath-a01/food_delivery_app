@@ -26,6 +26,19 @@ def create_delivery_partner(
     db: Session = Depends(get_db)
 ):
 
+    existing_partner = db.query(
+        DeliveryPartner
+    ).filter(
+        DeliveryPartner.phone ==
+        partner_data.phone
+    ).first()
+
+    if existing_partner:
+        raise HTTPException(
+            status_code=400,
+            detail="Phone number already registered"
+        )
+
     partner = DeliveryPartner(
         name=partner_data.name,
         phone=partner_data.phone,
@@ -41,6 +54,7 @@ def create_delivery_partner(
     return {
         "message": "Delivery partner added"
     }
+
 
 @router.post(
     "/delivery/assign/{order_id}/{partner_id}"
