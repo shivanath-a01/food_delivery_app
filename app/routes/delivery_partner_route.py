@@ -1,4 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
+from app.auth.token import (
+    create_access_token
+)
+from app.schemas.delivery_partner_schema import (
+    DeliveryPartnerCreate,
+    DeliveryPartnerLogin
+)
 
 from sqlalchemy.orm import Session
 from app.models.order import Order
@@ -29,20 +42,29 @@ def create_delivery_partner(
     existing_partner = db.query(
         DeliveryPartner
     ).filter(
-        DeliveryPartner.phone ==
-        partner_data.phone
+        DeliveryPartner.email ==
+        partner_data.email
     ).first()
 
     if existing_partner:
+
         raise HTTPException(
             status_code=400,
-            detail="Phone number already registered"
+            detail="Email already registered"
         )
+
+    hashed_password = pwd_context.hash(
+        partner_data.password
+    )
 
     partner = DeliveryPartner(
         name=partner_data.name,
+        email=partner_data.email,
+        password=hashed_password,
         phone=partner_data.phone,
-        vehicle_number=partner_data.vehicle_number
+        vehicle_type=partner_data.vehicle_type,
+        vehicle_number=partner_data.vehicle_number,
+        license_number=partner_data.license_number
     )
 
     db.add(partner)
@@ -52,9 +74,63 @@ def create_delivery_partner(
     db.refresh(partner)
 
     return {
-        "message": "Delivery partner added"
+        "message": "Delivery partner created successfully"
     }
 
+
+@router.post("/delivery/login")
+def delivery_login(
+    login_data: DeliveryPartnerLogin,
+    db: Session = Depends(get_db)
+):
+
+    partner = db.query(
+        DeliveryPartner
+    ).filter(
+        DeliveryPartner.email ==
+        login_data.email
+    ).first()
+
+    if not partner:
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials"
+        )
+
+    if not pwd_context.verify(
+        login_data.password,
+        partner.password
+    ):
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials"
+        )
+
+    token = create_access_token(
+        {
+            "sub": partner.email
+        }
+    )
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "partner_name": partner.name
+    }
+
+@router.get("/delivery/orders/available")
+def get_available_orders(
+    db: Session = Depends(get_db)
+):
+
+    orders = db.query(Order).filter(
+        Order.status == "Pending",
+        Order.delivery_partner_id == None
+    ).all()
+
+    return orders
 
 @router.post(
     "/delivery/assign/{order_id}/{partner_id}"
