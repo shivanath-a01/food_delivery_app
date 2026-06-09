@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 from fastapi import Depends, HTTPException
 from app.models.customer import Customer
+from app.models.restaurant import Restaurant
 
 load_dotenv()
 
@@ -35,7 +36,7 @@ from app.database import SessionLocal
 from app.models.customer import Customer
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="login"
+    tokenUrl="/restaurant/login"
 )
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -92,4 +93,50 @@ def get_current_admin(
     return current_user
 
 
+def get_current_restaurant(
+    token: str = Depends(oauth2_scheme)
+):
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        email = payload.get("sub")
+
+        if email is None:
+
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token"
+            )
+
+    except JWTError:
+
+        raise HTTPException(
+            status_code=401,
+            detail="Token is invalid or expired"
+        )
+
+    db = SessionLocal()
+
+    restaurant = db.query(
+        Restaurant
+    ).filter(
+        Restaurant.email == email
+    ).first()
+
+    db.close()
+
+    if restaurant is None:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Restaurant not found"
+        )
+
+    return restaurant
 

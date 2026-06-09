@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, TIMESTAMP
 from datetime import datetime
-
 from app.database import Base
 
 class Restaurant(Base):
@@ -15,10 +14,19 @@ class Restaurant(Base):
 
     contact_phone = Column(String)
 
+    email = Column(
+        String,
+        unique=True,
+        nullable=True
+    )
+
+    password = Column(
+        String,
+        nullable=True
+    )
+
     created_at = Column(
         TIMESTAMP,
         default=datetime.utcnow
     )
-
-
     
