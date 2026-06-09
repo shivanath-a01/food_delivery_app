@@ -132,6 +132,31 @@ def get_available_orders(
 
     return orders
 
+@router.get("/delivery/my-orders/{partner_id}")
+def get_my_orders(
+    partner_id: int,
+    db: Session = Depends(get_db)
+):
+
+    orders = db.query(Order).filter(
+        Order.delivery_partner_id == partner_id
+    ).all()
+
+    response = []
+
+    for order in orders:
+
+        response.append({
+            "order_id": order.id,
+            "customer_name": order.customer.customer_name,
+            "customer_phone": order.customer.contact_phone,
+            "total_amount": order.total_amount,
+            "status": order.status
+        })
+
+    return response
+
+
 @router.post(
     "/delivery/assign/{order_id}/{partner_id}"
 )
