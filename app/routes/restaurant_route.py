@@ -11,7 +11,9 @@ from app.auth.token import create_access_token
 from app.auth.token import (
     get_current_restaurant
 )
-
+from app.schemas.order_schema import (
+    OrderStatusUpdate
+)
 from app.schemas.restaurant_auth_schema import (
     RestaurantRegister,
     RestaurantLogin
