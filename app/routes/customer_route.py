@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from app.auth.token import get_current_user
 from fastapi.security import OAuth2PasswordRequestForm
 
-
+from fastapi.security import OAuth2PasswordBearer
 
 from app.schemas.customer_schema import CustomerCreate
 from app.models.customer import Customer

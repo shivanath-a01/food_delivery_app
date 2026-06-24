@@ -36,7 +36,7 @@ from app.database import SessionLocal
 from app.models.customer import Customer
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/login"
+    tokenUrl="login"
 )
 
 
