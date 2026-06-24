@@ -77,6 +77,25 @@ def create_delivery_partner(
         "message": "Delivery partner created successfully"
     }
 
+@router.get("/delivery/profile/{partner_id}")
+def get_partner_profile(
+    partner_id: int,
+    db: Session = Depends(get_db)
+):
+
+    partner = db.query(
+        DeliveryPartner
+    ).filter(
+        DeliveryPartner.id == partner_id
+    ).first()
+
+    if not partner:
+        raise HTTPException(
+            status_code=404,
+            detail="Partner not found"
+        )
+
+    return partner
 
 @router.post("/delivery/login")
 def delivery_login(

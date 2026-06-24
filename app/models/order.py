@@ -8,11 +8,10 @@ from sqlalchemy import (
 )
 
 from datetime import datetime
-from sqlalchemy import ForeignKey
-
 from sqlalchemy.orm import relationship
 
 from app.database import Base
+
 
 class Order(Base):
 
@@ -42,8 +41,19 @@ class Order(Base):
         backref="orders"
     )
 
+    restaurant_id = Column(
+        Integer,
+        ForeignKey("restaurant.id"),
+        nullable=True
+    )
+
+    restaurant = relationship(
+        "Restaurant",
+        backref="orders"
+    )
+
     delivery_partner_id = Column(
-    Integer,
-    ForeignKey("delivery_partners.id"),
-    nullable=True
+        Integer,
+        ForeignKey("delivery_partners.id"),
+        nullable=True
     )

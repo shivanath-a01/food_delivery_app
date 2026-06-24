@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Depends, Query
-
+from app.models.order import Order
+from app.models.order import Order
+from app.models.restaurant import Restaurant
+from app.auth.token import get_current_restaurant
 from sqlalchemy.orm import Session
 from app.models.item import FoodItem
 from passlib.context import CryptContext
@@ -252,5 +255,102 @@ def get_all_restaurants(
     restaurants = db.query(Restaurant).all()
 
     return restaurants
+@router.get("/restaurant/orders")
+def get_restaurant_orders(
 
+    current_restaurant: Restaurant =
+    Depends(get_current_restaurant),
 
+    db: Session = Depends(get_db)
+):
+
+    orders = db.query(Order).filter(
+        Order.restaurant_id ==
+        current_restaurant.id
+    ).all()
+
+    result = []
+
+    for order in orders:
+
+        result.append({
+
+            "order_id": order.id,
+
+            "customer_name":
+                order.customer.customer_name,
+
+            "customer_phone":
+                order.customer.contact_phone,
+
+            "total_amount":
+                order.total_amount,
+
+            "status":
+                order.status,
+
+            "created_at":
+                order.created_at
+        })
+
+    return result
+
+@router.get("/restaurant/orders")
+def get_restaurant_orders(
+    db: Session = Depends(get_db)
+):
+
+    orders = db.query(Order).filter(
+        Order.restaurant_id == 1
+    ).all()
+
+    return orders
+
+@router.put("/restaurant/orders/{order_id}")
+def update_restaurant_order_status(
+    order_id: int,
+    order_data: OrderStatusUpdate,
+    db: Session = Depends(get_db)
+):
+
+    order = db.query(Order).filter(
+        Order.id == order_id
+    ).first()
+
+    if not order:
+        raise HTTPException(
+            status_code=404,
+            detail="Order not found"
+        )
+
+    order.status = order_data.status
+
+    db.commit()
+
+    db.refresh(order)
+
+    return {
+        "message": "Order status updated",
+        "status": order.status
+    }
+@router.get("/restaurant/dashboard")
+def restaurant_dashboard(
+    current_restaurant: Restaurant = Depends(
+        get_current_restaurant
+    ),
+    db: Session = Depends(get_db)
+):
+
+    orders = db.query(Order).filter(
+        Order.restaurant_id ==
+        current_restaurant.id
+    ).all()
+
+    return {
+        "total_orders": len(orders),
+        "pending_orders":
+            len([
+                o for o in orders
+                if o.status == "Pending"
+            ])
+    }

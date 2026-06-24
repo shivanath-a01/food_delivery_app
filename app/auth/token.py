@@ -36,8 +36,9 @@ from app.database import SessionLocal
 from app.models.customer import Customer
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/restaurant/login"
+    tokenUrl="/login"
 )
+
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
 

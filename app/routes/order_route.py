@@ -47,10 +47,10 @@ def place_order(
         grand_total += total_price
 
     new_order = Order(
-        customer_id=current_user.id,
-        total_amount=grand_total
+    customer_id=current_user.id,
+    restaurant_id=cart_items[0].food_item.restaurant_id,
+    total_amount=grand_total
     )
-
     db.add(new_order)
 
     db.commit()
